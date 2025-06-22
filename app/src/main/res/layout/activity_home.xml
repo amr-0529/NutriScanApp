@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F2F5"
+    tools:context=".HomeActivity">
+
+    <!-- A friendly greeting for the user. -->
+    <TextView
+        android:id="@+id/textViewWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:text="Welcome to NutriScan!"
+        android:textColor="#333333"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        />
+
+    <!-- Button to start a new food scan - MaterialButton with Icon -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonScanNewItem"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/textViewWelcome"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="#007BFF"
+        android:text="Scan New Food Item"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_camera_white_24dp"
+        app:iconTint="#FFFFFF"
+        app:iconPadding="15dp"
+        app:cornerRadius="25dp" />
+
+    <!-- Button to view past scan history - MaterialButton with Icon -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonViewHistory"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/buttonScanNewItem"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="#007BFF"
+        android:text="View Scan History"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_history_white_24dp"
+        app:iconTint="#FFFFFF"
+        app:iconPadding="15dp"
+        app:cornerRadius="25dp" />
+
+    <!-- Button for About screen - MaterialButton with Icon -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonAbout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/buttonViewHistory"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="#007BFF"
+        android:text="About NutriScan"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_info_white_24dp"
+        app:iconTint="#FFFFFF"
+        app:iconPadding="15dp"
+        app:cornerRadius="25dp" />
+
+    <!-- Button for Settings screen - MaterialButton with Icon -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonSettings"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/buttonAbout"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="#007BFF"
+        android:text="Settings"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_settings_white_24dp"
+        app:iconTint="#FFFFFF"
+        app:iconPadding="15dp"
+        app:cornerRadius="25dp" />
+
+
+    <!-- Button to log out of the app - MaterialButton with Icon -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:text="Logout"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#FF4F4F"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_logout_white_24dp"
+        app:iconTint="#FFFFFF"
+        app:iconPadding="8dp"
+        app:cornerRadius="25dp" />
+
+</RelativeLayout>

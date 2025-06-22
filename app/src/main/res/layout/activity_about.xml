@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F2F5"
+    tools:context=".AboutActivity">
+
+    <!-- Title for the About screen -->
+    <TextView
+        android:id="@+id/textViewAboutTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:text="About NutriScan"
+        android:textColor="#333333"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        />
+
+    <!-- App Description -->
+    <TextView
+        android:id="@+id/textViewAppDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewAboutTitle"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="40dp"
+        android:text="NutriScan is your personal assistant for making healthier food choices. Scan food labels, get instant nutrition facts, and track your dietary history with ease. We use cutting-edge OCR technology and a comprehensive nutrition database to empower your health journey!"
+        android:textColor="#555555"
+        android:textSize="16sp"
+        android:lineSpacingExtra="4dp"
+        android:gravity="center_horizontal"
+        />
+
+    <!-- Version Information -->
+    <TextView
+        android:id="@+id/textViewVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewAppDescription"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Version 1.0.0"
+        android:textColor="#888888"
+        android:textSize="14sp"
+        />
+
+    <!-- Contact Email -->
+    <TextView
+        android:id="@+id/textViewContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewVersion"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="Contact: support@nutriscan.com"
+        android:textColor="#007BFF"
+        android:textSize="14sp"
+        android:autoLink="email"
+        />
+
+    <!-- Button to go back -->
+    <Button
+        android:id="@+id/buttonBackAbout"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/rounded_button_background"
+        android:text="Back"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:foreground="?attr/selectableItemBackground"
+        />
+
+</RelativeLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This one styles our buttons, making them blue and pill-shaped. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:startColor="#007BFF"
+        android:endColor="#0056b3"
+        android:angle="90" />
+    <corners android:radius="25dp" />
+</shape>

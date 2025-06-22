@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F2F5"
+    tools:context=".HistoryDetailActivity">
+
+    <TextView
+        android:id="@+id/textViewDetailTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:text="Scan Details"
+        android:textColor="#333333"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        />
+
+    <TextView
+        android:id="@+id/textViewDetailFoodName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewDetailTitle"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="40dp"
+        android:text="Food: [Food Name]"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        />
+
+    <View
+        android:id="@+id/detailHealthStatusIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/textViewDetailFoodName"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="20dp"
+        android:background="#CCCCCC"
+        />
+
+    <TextView
+        android:id="@+id/textViewDetailHealthStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/detailHealthStatusIndicator"
+        android:layout_alignBottom="@+id/detailHealthStatusIndicator"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical"
+        android:text="Status: Loading..."
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <LinearLayout
+        android:id="@+id/linearLayoutNutritionDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detailHealthStatusIndicator"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_edittext_background"
+        android:padding="20dp"
+        >
+
+        <TextView
+            android:id="@+id/textViewDetailSugar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sugar: --"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            android:paddingBottom="5dp"
+            />
+
+        <TextView
+            android:id="@+id/textViewDetailSalt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Salt: --"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            android:paddingBottom="5dp"
+            />
+
+        <TextView
+            android:id="@+id/textViewDetailFat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fat: --"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewDetailLocationDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayoutNutritionDetails"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="30dp"
+        android:text="Scanned: --/--/---- at Unknown Location"
+        android:textColor="#666666"
+        android:textSize="14sp"
+        android:gravity="center_horizontal"
+        android:textStyle="italic"
+        />
+
+    <TextView
+        android:id="@+id/textViewDetailTips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewDetailLocationDate"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="10dp"
+        android:text="Tips: Looking good!"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="italic"
+        android:gravity="center_horizontal"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        >
+
+        <Button
+            android:id="@+id/buttonViewOnMap"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_button_background"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="View on Map"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/buttonDeleteScan"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:backgroundTint="#FF4F4F"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="Delete Scan"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonBackFromDetail"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="122dp"
+        android:background="@drawable/rounded_button_background"
+        android:foreground="?attr/selectableItemBackground"
+        android:text="Back to History"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
