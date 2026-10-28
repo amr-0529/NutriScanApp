@@ -1,113 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F2F5"
-    tools:context=".SignUpActivity">
+    android:background="@color/bg_light"
+    android:fillViewport="true">
 
-    <!-- Title for the sign-up page -->
-    <TextView
-        android:id="@+id/textViewSignUpTitle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
-        android:text="Join NutriScan!"
-        android:textColor="#333333"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-medium"
-        />
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp">
 
-    <!-- Box for new username/email -->
-    <EditText
-        android:id="@+id/editTextSignUpUsername"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@+id/textViewSignUpTitle"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/rounded_edittext_background"
-        android:hint="Choose a Username or Email"
-        android:inputType="textEmailAddress"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:textColorHint="#999999"
-        android:textColor="#333333"
-        android:textSize="16sp"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="10dp"
+            android:text="Create Account"
+            android:textColor="@color/text_dark"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
-    <!-- Box for new password -->
-    <EditText
-        android:id="@+id/editTextSignUpPassword"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@+id/editTextSignUpUsername"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/rounded_edittext_background"
-        android:hint="Create a Password"
-        android:inputType="textPassword"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:textColorHint="#999999"
-        android:textColor="#333333"
-        android:textSize="16sp"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:text="Join NutriScan today"
+            android:textColor="@color/text_light"
+            android:textSize="16sp" />
 
-    <!-- Box to type password again, just to be sure it's correct -->
-    <EditText
-        android:id="@+id/editTextConfirmPassword"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@+id/editTextSignUpPassword"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/rounded_edittext_background"
-        android:hint="Confirm Password"
-        android:inputType="textPassword"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:textColorHint="#999999"
-        android:textColor="#333333"
-        android:textSize="16sp"
-        />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp">
 
-    <!-- Button to register the new account -->
-    <Button
-        android:id="@+id/buttonRegister"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_below="@+id/editTextConfirmPassword"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/rounded_button_background"
-        android:text="Register Account"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:foreground="?attr/selectableItemBackground"
-        />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextSignUpUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Username"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Link to go back to the login screen -->
-    <TextView
-        android:id="@+id/textViewLoginInsteadLink"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonRegister"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        android:padding="10dp"
-        android:text="Already have an account? Log In!"
-        android:textColor="#007BFF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:endIconMode="password_toggle">
 
-</RelativeLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextSignUpPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:endIconMode="password_toggle">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Confirm Password"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonRegister"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Sign Up"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/primary_green"
+            app:cornerRadius="30dp" />
+
+        <TextView
+            android:id="@+id/textViewLoginInsteadLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:padding="10dp"
+            android:text="Already have an account? Log In"
+            android:textColor="@color/primary_green"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</ScrollView>

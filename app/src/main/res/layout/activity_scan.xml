@@ -1,45 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    tools:context=".ScanActivity">
+    android:background="#000000">
 
-    <!-- This shows the live camera feed. -->
+    <!-- Full-screen clean camera preview -->
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/buttonCaptureImage"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- A button to capture (take) the picture -->
-    <Button
-        android:id="@+id/buttonCaptureImage"
+    <!-- Tap to focus overlay -->
+    <View
+        android:id="@+id/tapToFocusOverlay"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/rounded_button_background"
-        android:text="Capture Food Label"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:foreground="?attr/selectableItemBackground"
-        />
-    <!-- Retry Button -->
-    <Button
-        android:id="@+id/buttonRetry"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Sleek top gradient -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="#88000000"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewScanGuide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonCaptureImage"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="Retry Scan"
-        android:visibility="gone" />
+        android:layout_marginTop="40dp"
+        android:text="Point camera at nutrition label"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:shadowColor="#000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</RelativeLayout>
+    <!-- Modern Flashlight Toggle -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabFlashlight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/ic_flash_off"
+        app:backgroundTint="#55FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#FFFFFF" />
+
+    <!-- Cinematic Bottom Gradient -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="#88000000"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- PERFECTLY ALIGNED SHUTTER BUTTON -->
+    <FrameLayout
+        android:id="@+id/buttonCaptureImage"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- The Green Circle Background -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@color/primary_green"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="6dp" />
+
+        <!-- The Camera Icon Centered Perfectly -->
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_camera_white_24dp"
+            app:tint="#FFFFFF" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

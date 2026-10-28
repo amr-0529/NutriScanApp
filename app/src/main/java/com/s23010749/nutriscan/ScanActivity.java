@@ -1,27 +1,27 @@
 package com.s23010749.nutriscan;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ExperimentalGetImage;
+import androidx.camera.core.FocusMeteringAction;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
+import androidx.camera.core.MeteringPoint;
+import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -30,26 +30,29 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,27 +67,24 @@ public class ScanActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_CAMERA_PERMISSIONS = 10;
     private static final int REQUEST_CODE_LOCATION_PERMISSIONS = 11;
     private static final String[] REQUIRED_CAMERA_PERMISSIONS = new String[]{Manifest.permission.CAMERA};
-    private static final String[] REQUIRED_LOCATION_PERMISSIONS = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-    };
+    private static final String[] REQUIRED_LOCATION_PERMISSIONS = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
     private PreviewView viewFinder;
-    private Button buttonCaptureImage; // Button to trigger OCR fallback
+    private View buttonCaptureImage;
+    private FloatingActionButton fabFlashlight;
     private ImageCapture imageCapture;
     private ExecutorService cameraExecutor;
     private FusedLocationProviderClient fusedLocationClient;
     private String currentKnownLocation = "Unknown Location";
+    private Camera camera;
+    private boolean isFlashlightOn = false;
 
-    // ML Kit
     private TextRecognizer textRecognizer;
     private BarcodeScanner barcodeScanner;
-
-    // Networking
     private OpenFoodFactsApi api;
 
-    // State flag to prevent multiple scans
     private boolean isScanned = false;
+    private boolean isProcessingFallback = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,165 +93,140 @@ public class ScanActivity extends AppCompatActivity {
 
         viewFinder = findViewById(R.id.viewFinder);
         buttonCaptureImage = findViewById(R.id.buttonCaptureImage);
+        fabFlashlight = findViewById(R.id.fabFlashlight);
 
         cameraExecutor = Executors.newSingleThreadExecutor();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
-        // Initialize ML Kit Barcode Scanner
-        BarcodeScannerOptions barcodeOptions = new BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
-                .build();
-        barcodeScanner = BarcodeScanning.getClient(barcodeOptions);
+        barcodeScanner = BarcodeScanning.getClient(new BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build());
 
-        // Initialize Retrofit for Open Food Facts
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://world.openfoodfacts.org/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://world.openfoodfacts.org/").addConverterFactory(GsonConverterFactory.create()).build();
         api = retrofit.create(OpenFoodFactsApi.class);
 
-        if (allCameraPermissionsGranted()) {
-            startCamera();
-        } else {
-            ActivityCompat.requestPermissions(this, REQUIRED_CAMERA_PERMISSIONS, REQUEST_CODE_CAMERA_PERMISSIONS);
-        }
+        if (allCameraPermissionsGranted()) startCamera();
+        else ActivityCompat.requestPermissions(this, REQUIRED_CAMERA_PERMISSIONS, REQUEST_CODE_CAMERA_PERMISSIONS);
 
-        if (allLocationPermissionsGranted()) {
-            getLastLocation();
-        } else {
-            ActivityCompat.requestPermissions(this, REQUIRED_LOCATION_PERMISSIONS, REQUEST_CODE_LOCATION_PERMISSIONS);
-        }
+        if (allLocationPermissionsGranted()) getLastLocation();
+        else ActivityCompat.requestPermissions(this, REQUIRED_LOCATION_PERMISSIONS, REQUEST_CODE_LOCATION_PERMISSIONS);
 
-        // The capture button now serves as the OCR fallback trigger
-        buttonCaptureImage.setOnClickListener(v -> captureAndRecognizeText());
+        fabFlashlight.setOnClickListener(v -> {
+            if (camera != null) {
+                isFlashlightOn = !isFlashlightOn;
+                camera.getCameraControl().enableTorch(isFlashlightOn);
+                fabFlashlight.setImageResource(isFlashlightOn ? R.drawable.ic_flash_on : R.drawable.ic_flash_off);
+            }
+        });
+
+        viewFinder.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_UP && camera != null) {
+                MeteringPointFactory factory = viewFinder.getMeteringPointFactory();
+                MeteringPoint point = factory.createPoint(event.getX(), event.getY());
+                FocusMeteringAction action = new FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).setAutoCancelDuration(2, TimeUnit.SECONDS).build();
+                camera.getCameraControl().startFocusAndMetering(action);
+            }
+            return true;
+        });
+
+        buttonCaptureImage.setOnClickListener(v -> {
+            if (!isProcessingFallback) {
+                isProcessingFallback = true;
+                Toast.makeText(this, "Capturing...", Toast.LENGTH_SHORT).show();
+                captureAndRecognizeText();
+            }
+        });
     }
 
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-
                 Preview preview = new Preview.Builder().build();
                 preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
 
-                imageCapture = new ImageCapture.Builder()
-                        .setTargetRotation(viewFinder.getDisplay().getRotation())
-                        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                        .build();
-
-                // ImageAnalysis for barcode scanning
+                imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).build();
                 ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .setTargetResolution(new android.util.Size(1920, 1080))
                         .build();
 
                 imageAnalysis.setAnalyzer(cameraExecutor, this::processImageForBarcode);
 
-                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
-
                 cameraProvider.unbindAll();
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis);
-
+                camera = cameraProvider.bindToLifecycle(this, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageCapture, imageAnalysis);
             } catch (ExecutionException | InterruptedException e) {
-                Toast.makeText(this, "Camera start failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Camera Error", Toast.LENGTH_SHORT).show();
             }
         }, ContextCompat.getMainExecutor(this));
     }
 
-    // Analyzer for Barcode Detection
     @OptIn(markerClass = ExperimentalGetImage.class)
     private void processImageForBarcode(@NonNull ImageProxy imageProxy) {
-        if (isScanned) {
-            imageProxy.close();
-            return;
-        }
+        if (isScanned || isProcessingFallback) { imageProxy.close(); return; }
         Image mediaImage = imageProxy.getImage();
         if (mediaImage != null) {
             InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-            barcodeScanner.process(image)
-                    .addOnSuccessListener(barcodes -> {
-                        if (!barcodes.isEmpty() && !isScanned) {
-                            isScanned = true; // Stop further processing
-                            String rawValue = barcodes.get(0).getRawValue();
-                            Log.d("ScanActivity", "Barcode detected: " + rawValue);
-
-                            // Fetch data from Open Food Facts
-                            fetchFromOpenFoodFacts(rawValue);
-                        }
-                    })
-                    .addOnFailureListener(e -> Log.e("ScanActivity", "Barcode scan failed", e))
-                    .addOnCompleteListener(task -> imageProxy.close());
-        } else {
-            imageProxy.close();
-        }
+            barcodeScanner.process(image).addOnSuccessListener(barcodes -> {
+                if (!barcodes.isEmpty() && !isScanned) {
+                    isScanned = true;
+                    fetchFromOpenFoodFacts(barcodes.get(0).getRawValue());
+                }
+            }).addOnCompleteListener(task -> imageProxy.close());
+        } else { imageProxy.close(); }
     }
 
-    // Fetch product data from Open Food Facts API
     private void fetchFromOpenFoodFacts(String barcode) {
-        Toast.makeText(this, "Product found! Fetching nutrition data...", Toast.LENGTH_SHORT).show();
-
-        String userAgent = "NutriScanApp/1.0 (contact@nutriscan.com)"; // Required format
-        String scanDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
-
+        String userAgent = "NutriScanApp/1.0 (contact@nutriscan.com)";
         api.getProductByBarcode(barcode, userAgent).enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getStatus() == 1) {
                     ProductResponse.Product product = response.body().getProduct();
                     if (product != null && product.getNutriments() != null) {
-                        // Successfully got product data
-                        String foodName = product.getProductName() != null ? product.getProductName() : "Unknown Product";
-                        double sugar = product.getNutriments().getSugars100g();
-                        double fat = product.getNutriments().getFat100g();
-                        double salt = product.getNutriments().getSalt100g();
-                        String nutriscore = product.getNutriscoreGrade();
+                        String name = product.getProductName() != null ? product.getProductName() : "Unknown Product";
+                        JSONObject nutrientsJson = new JSONObject();
+                        try {
+                            if (product.getNutriments().getEnergyKcal100g() > 0) nutrientsJson.put("Energy", String.format(Locale.getDefault(), "%.0f kcal", product.getNutriments().getEnergyKcal100g()));
+                            if (product.getNutriments().getProteins100g() > 0) nutrientsJson.put("Protein", String.format(Locale.getDefault(), "%.1fg", product.getNutriments().getProteins100g()));
+                            if (product.getNutriments().getCarbohydrates100g() > 0) nutrientsJson.put("Carbohydrates", String.format(Locale.getDefault(), "%.1fg", product.getNutriments().getCarbohydrates100g()));
+                            if (product.getNutriments().getSugars100g() > 0) nutrientsJson.put("Sugar", String.format(Locale.getDefault(), "%.1fg", product.getNutriments().getSugars100g()));
+                            if (product.getNutriments().getFat100g() > 0) nutrientsJson.put("Fat", String.format(Locale.getDefault(), "%.1fg", product.getNutriments().getFat100g()));
+                            if (product.getNutriments().getSalt100g() > 0) nutrientsJson.put("Salt", String.format(Locale.getDefault(), "%.2fg", product.getNutriments().getSalt100g()));
+                        } catch (JSONException e) { e.printStackTrace(); }
 
-                        // Determine health status
-                        String[] healthResult = determineHealthStatus(sugar, fat, salt, nutriscore);
-
-                        navigateToResult(foodName, sugar, fat, salt, healthResult[0], healthResult[1], scanDate);
+                        int[] scoreData = calculateHealthScore(product.getNutriments().getSugars100g(), product.getNutriments().getFat100g(), product.getNutriments().getSalt100g());
+                        navigateToResult(name, nutrientsJson.toString(), "", scoreData[0], getTags(product.getNutriments().getSugars100g(), product.getNutriments().getFat100g(), product.getNutriments().getSalt100g(), product.getNutriments().getProteins100g()));
                     } else {
-                        // Product found but no nutrition data
-                        showErrorAndRetry("Product found, but no nutrition data available. Try OCR fallback.");
+                        triggerOcrFallback("No nutrition data. Scanning label...");
                     }
                 } else {
-                    // Product not found in database
-                    showErrorAndRetry("Product not found in Open Food Facts. Try OCR fallback.");
+                    triggerOcrFallback("Product not found. Scanning label...");
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
-                Log.e("ScanActivity", "API call failed", t);
-                // Network error -> Automatically trigger OCR fallback
-                Toast.makeText(ScanActivity.this, "Network error. Falling back to OCR.", Toast.LENGTH_SHORT).show();
-                isScanned = false; // Reset flag
-                captureAndRecognizeText(); // Trigger OCR
+                triggerOcrFallback("Network error. Scanning label...");
             }
         });
     }
 
-    // --- OCR Fallback Logic ---
-    private void captureAndRecognizeText() {
-        if (imageCapture == null) {
-            Toast.makeText(this, "Camera not ready.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Toast.makeText(this, "Capturing image for text recognition...", Toast.LENGTH_SHORT).show();
+    private void triggerOcrFallback(String reason) {
+        Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
+        isProcessingFallback = true;
+        captureAndRecognizeText();
+    }
 
+    private void captureAndRecognizeText() {
+        if (imageCapture == null) return;
         imageCapture.takePicture(cameraExecutor, new ImageCapture.OnImageCapturedCallback() {
             @Override
             public void onCaptureSuccess(@NonNull ImageProxy imageProxy) {
                 processImageForTextRecognition(imageProxy);
             }
-
             @Override
             public void onError(@NonNull ImageCaptureException exception) {
-                Log.e("ScanActivity", "Image capture failed", exception);
-                // Ultimate fallback: Navigate with default values
-                navigateToResultWithFallback("Unknown Food (Capture Error)", "0g", "0g", "0g", "Unknown", "Could not capture image.");
+                navigateToResult("Unknown Food", "{}", "", -1, "Could not capture.");
             }
         });
     }
@@ -261,169 +236,152 @@ public class ScanActivity extends AppCompatActivity {
         Image mediaImage = imageProxy.getImage();
         if (mediaImage != null) {
             InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-            textRecognizer.process(image)
-                    .addOnSuccessListener(result -> {
-                        String recognizedText = result.getText();
-                        Log.d("ScanActivity", "OCR Text: " + recognizedText);
-                        // Parse nutrition values using Regex
-                        parseNutritionFromText(recognizedText);
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("ScanActivity", "OCR failed", e);
-                        navigateToResultWithFallback("Unknown Food (OCR Failed)", "0g", "0g", "0g", "Unknown", "Could not read label.");
-                    })
-                    .addOnCompleteListener(task -> imageProxy.close());
-        } else {
-            imageProxy.close();
-            navigateToResultWithFallback("Unknown Food", "0g", "0g", "0g", "Unknown", "Image was null.");
-        }
+            textRecognizer.process(image).addOnSuccessListener(result -> parseAllText(result.getText())).addOnCompleteListener(task -> imageProxy.close());
+        } else { imageProxy.close(); }
     }
 
-    // Regex to extract Sugar, Fat, and Salt from OCR text
-    private void parseNutritionFromText(String text) {
-        double sugar = 0, fat = 0, salt = 0;
-        boolean found = false;
+    // --- THE NEW "SCAN EVERYTHING" ENGINE ---
+    private void parseAllText(String rawText) {
+        Map<String, String> nutrientMap = new LinkedHashMap<>();
 
-        // Patterns look for "Sugar", "Fat", "Salt" followed by a number and "g"
-        // Example: "Sugar 10.5g", "Fat: 5g", "Salt - 0.3g"
-        Pattern sugarPattern = Pattern.compile("(?i)sugars?\\s*[:\\-]?\\s*(\\d+(?:\\.\\d+)?)\\s*g");
-        Pattern fatPattern = Pattern.compile("(?i)fats?\\s*[:\\-]?\\s*(\\d+(?:\\.\\d+)?)\\s*g");
-        Pattern saltPattern = Pattern.compile("(?i)salt\\s*[:\\-]?\\s*(\\d+(?:\\.\\d+)?)\\s*g");
+        // Flatten the text into a single line so multi-column labels don't break the parser
+        String flatText = rawText.replace("\n", " ").replace("\r", " ");
 
-        Matcher sugarMatcher = sugarPattern.matcher(text);
-        Matcher fatMatcher = fatPattern.matcher(text);
-        Matcher saltMatcher = saltPattern.matcher(text);
+        // Regex looks for ANY nutrient keyword, followed by a number, followed by a unit.
+        // It extracts the FIRST number it finds for each nutrient (which is usually the Per 100g value).
+        Pattern pattern = Pattern.compile("(?i)(energy|calories|protein|carbohydrates?|sugars?|fat|saturates|saturated|trans fat|salt|sodium|fiber|cholesterol)[^0-9]{0,10}([0-9]+(?:[.,][0-9]+)?)\\s*(g|mg|kj|kcal|%)?");
+        Matcher matcher = pattern.matcher(flatText);
 
-        if (sugarMatcher.find()) { sugar = Double.parseDouble(sugarMatcher.group(1)); found = true; }
-        if (fatMatcher.find()) { fat = Double.parseDouble(fatMatcher.group(1)); found = true; }
-        if (saltMatcher.find()) { salt = Double.parseDouble(saltMatcher.group(1)); found = true; }
+        double parsedSugar = 0, parsedFat = 0, parsedSalt = 0, parsedProtein = 0;
+        boolean foundAnything = false;
 
-        String scanDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+        while (matcher.find()) {
+            String rawName = matcher.group(1).toLowerCase().trim();
+            String valueStr = matcher.group(2).replace(",", ".");
+            String unit = matcher.group(3) != null ? matcher.group(3).toLowerCase() : "g";
 
-        if (found) {
-            // Determine health status based on parsed values
-            String[] healthResult = determineHealthStatus(sugar, fat, salt, null);
-            navigateToResult("Scanned Food (OCR)", sugar, fat, salt, healthResult[0], healthResult[1], scanDate);
-        } else {
-            // If no values found, use fallback
-            navigateToResultWithFallback("Scanned Food (OCR)", "0g", "0g", "0g", "Unknown", "Could not parse nutrition values from label. Please try again.");
+            // Clean up the name for the UI
+            String displayName = capitalize(rawName);
+            if (rawName.contains("carbohydrate")) displayName = "Carbohydrates";
+            if (rawName.contains("energy") || rawName.contains("calorie")) displayName = "Energy";
+            if (rawName.contains("saturates")) displayName = "Saturated Fat";
+            if (rawName.contains("sodium")) displayName = "Sodium";
+
+            // Prevent duplicates (e.g., if "Total Fat" and "Fat" are both found, keep the first one)
+            if (!nutrientMap.containsKey(displayName)) {
+                String formattedValue = valueStr + " " + (unit.equals("kj") ? "kJ" : unit);
+                nutrientMap.put(displayName, formattedValue);
+                foundAnything = true;
+            }
+
+            // Parse values for Health Score Calculation
+            double val = Double.parseDouble(valueStr);
+            if (unit.equals("mg")) val = val / 1000.0; // Convert mg to g
+
+            if (rawName.contains("sugar")) parsedSugar = Math.max(parsedSugar, val);
+            if (rawName.equals("fat") || rawName.contains("total fat")) parsedFat = Math.max(parsedFat, val);
+            if (rawName.contains("salt")) parsedSalt = Math.max(parsedSalt, val);
+            if (rawName.contains("sodium")) parsedSalt = Math.max(parsedSalt, val * 2.5);
+            if (rawName.contains("protein")) parsedProtein = Math.max(parsedProtein, val);
         }
-    }
 
-    // --- Shared Logic for Health Classification ---
-    // Uses Nutri-Score if available, otherwise applies nutrient thresholds.
-    private String[] determineHealthStatus(double sugar, double fat, double salt, String nutriscore) {
-        // Priority 1: Use Nutri-Score if available from API
-        if (nutriscore != null) {
-            switch (nutriscore.toLowerCase()) {
-                case "a":
-                case "b":
-                    return new String[]{"Healthy", "Excellent choice! This food is healthy."};
-                case "c":
-                    return new String[]{"Moderate", "Okay for occasional consumption. Check portion sizes."};
-                case "d":
-                case "e":
-                    return new String[]{"Unhealthy", "High in sugar, salt, or fat. Consume rarely."};
+        // Extract Ingredients
+        StringBuilder ingredients = new StringBuilder();
+        String lowerText = rawText.toLowerCase();
+        if (lowerText.contains("ingredients")) {
+            int startIndex = lowerText.indexOf("ingredients") + 11;
+            if (startIndex < rawText.length()) {
+                String ingText = rawText.substring(startIndex);
+                if (ingText.toLowerCase().contains("manufactured")) ingText = ingText.substring(0, ingText.toLowerCase().indexOf("manufactured"));
+                ingredients.append(ingText.trim());
             }
         }
 
-        // Priority 2: Use nutrient thresholds (for OCR fallback or if Nutri-Score is missing)
-        if (sugar > 13.5 || fat > 5.0 || salt > 1.5) {
-            return new String[]{"Unhealthy", "Warning: High in certain nutrients. Consume in moderation."};
-        } else if (sugar <= 5.0 && fat <= 3.0 && salt <= 0.3) {
-            return new String[]{"Healthy", "Good nutrient balance!"};
+        // Product Name
+        String productName = "Scanned Food Label";
+        String[] lines = rawText.split("\n");
+        for(int i=0; i<Math.min(4, lines.length); i++) {
+            if(lines[i].trim().length() > 5 && !lines[i].toLowerCase().contains("nutrition") && !lines[i].toLowerCase().contains("serving")) {
+                productName = lines[i].trim();
+                break;
+            }
+        }
+
+        String jsonString = new JSONObject(nutrientMap).toString();
+        String ingredientsStr = ingredients.toString().replace("\n", " ").trim();
+
+        if (!foundAnything) {
+            navigateToResult(productName, "{}", ingredientsStr, -1, "No nutrients detected. Please ensure the label is well-lit and readable.");
         } else {
-            return new String[]{"Moderate", "Check the full label for details."};
+            int[] scoreData = calculateHealthScore(parsedSugar, parsedFat, parsedSalt);
+            String tags = getTags(parsedSugar, parsedFat, parsedSalt, parsedProtein);
+            navigateToResult(productName, jsonString, ingredientsStr, scoreData[0], tags);
         }
     }
 
-    // Helper to navigate to ResultActivity
-    private void navigateToResult(String foodName, double sugar, double fat, double salt, String healthStatus, String tips, String date) {
-        Intent intent = new Intent(ScanActivity.this, ResultActivity.class);
-        intent.putExtra("food_name", foodName);
-        intent.putExtra("sugar_level", String.format(Locale.getDefault(), "%.1fg", sugar));
-        intent.putExtra("salt_level", String.format(Locale.getDefault(), "%.2fg", salt));
-        intent.putExtra("fat_level", String.format(Locale.getDefault(), "%.1fg", fat));
-        intent.putExtra("health_status", healthStatus);
-        intent.putExtra("tips_message", tips);
-        intent.putExtra("scan_date", date);
-        intent.putExtra("scan_location", currentKnownLocation);
-        startActivity(intent);
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+    private int[] calculateHealthScore(double sugar, double fat, double salt) {
+        int score = 100;
+        if (sugar > 13.5) score -= 30; else if (sugar > 5) score -= 10;
+        if (fat > 5.0) score -= 25; else if (fat > 3) score -= 10;
+        if (salt > 1.5) score -= 25; else if (salt > 0.3) score -= 10;
+        score = Math.max(0, Math.min(100, score));
+        return new int[]{score, score >= 80 ? 1 : (score >= 50 ? 2 : 3)};
+    }
+
+    private String getTags(double sugar, double fat, double salt, double protein) {
+        StringBuilder tags = new StringBuilder();
+        if (sugar > 13.5) tags.append("High Sugar|");
+        if (fat > 5.0) tags.append("High Fat|");
+        if (salt > 1.5) tags.append("High Salt|");
+        if (protein > 5.0) tags.append("High Protein|");
+        if (sugar <= 5.0 && fat <= 3.0 && salt <= 0.3) tags.append("Low Fat/Sugar|");
+        return tags.toString();
+    }
+
+    private void navigateToResult(String name, String nutrientsJson, String ingredients, int score, String tags) {
+        String healthStatus = score == -1 ? "Not Detected" : (score >= 80 ? "Healthy" : (score >= 50 ? "Moderate" : "Unhealthy"));
+        Intent i = new Intent(this, ResultActivity.class);
+        i.putExtra("food_name", name);
+        i.putExtra("nutrients_json", nutrientsJson);
+        i.putExtra("ingredients", ingredients);
+        i.putExtra("health", healthStatus);
+        i.putExtra("score", score);
+        i.putExtra("tags", tags);
+        i.putExtra("date", new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date()));
+        i.putExtra("location", currentKnownLocation);
+        startActivity(i);
         finish();
     }
 
-    private void navigateToResultWithFallback(String foodName, String sugar, String fat, String salt, String healthStatus, String tips) {
-        String scanDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
-        Intent intent = new Intent(ScanActivity.this, ResultActivity.class);
-        intent.putExtra("food_name", foodName);
-        intent.putExtra("sugar_level", sugar);
-        intent.putExtra("salt_level", salt);
-        intent.putExtra("fat_level", fat);
-        intent.putExtra("health_status", healthStatus);
-        intent.putExtra("tips_message", tips);
-        intent.putExtra("scan_date", scanDate);
-        intent.putExtra("scan_location", currentKnownLocation);
-        startActivity(intent);
-        finish();
-    }
-
-    private void showErrorAndRetry(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        isScanned = false; // Reset the scan flag so the user can try again
-    }
-
-    // --- Location & Permission Methods (Unchanged from your original) ---
     private boolean allLocationPermissionsGranted() {
-        for (String permission : REQUIRED_LOCATION_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
+        for (String p : REQUIRED_LOCATION_PERMISSIONS) if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) return false;
         return true;
     }
 
     private boolean allCameraPermissionsGranted() {
-        for (String permission : REQUIRED_CAMERA_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
+        for (String p : REQUIRED_CAMERA_PERMISSIONS) if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) return false;
         return true;
     }
 
+    @SuppressLint("MissingPermission")
     private void getLastLocation() {
         if (allLocationPermissionsGranted()) {
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, location -> {
-                        if (location != null) {
-                            currentKnownLocation = String.format(Locale.getDefault(), "Lat: %.4f, Lon: %.4f", location.getLatitude(), location.getLongitude());
-                        } else {
-                            // Fallback to Geocoder if possible, or keep default
-                            currentKnownLocation = "Unknown Location";
-                        }
-                    });
-        } else {
-            currentKnownLocation = "Location Permission Denied";
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) currentKnownLocation = String.format(Locale.getDefault(), "Lat: %.4f, Lon: %.4f", location.getLatitude(), location.getLongitude());
+            });
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE_CAMERA_PERMISSIONS) {
-            if (allCameraPermissionsGranted()) {
-                startCamera();
-            } else {
-                Toast.makeText(this, "Camera permission needed!", Toast.LENGTH_LONG).show();
-                finish();
-            }
-        } else if (requestCode == REQUEST_CODE_LOCATION_PERMISSIONS) {
-            if (allLocationPermissionsGranted()) {
-                getLastLocation();
-            } else {
-                currentKnownLocation = "Location Denied";
-            }
-        }
+        if (requestCode == REQUEST_CODE_CAMERA_PERMISSIONS && allCameraPermissionsGranted()) startCamera();
+        else if (requestCode == REQUEST_CODE_LOCATION_PERMISSIONS && allLocationPermissionsGranted()) getLastLocation();
     }
 
     @Override
