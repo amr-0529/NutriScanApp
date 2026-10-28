@@ -11,7 +11,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Name and version for our database file.
     private static final String DATABASE_NAME = "NutriScan.db";
-    private static final int DATABASE_VERSION = 3; // Version 3 for full scan_history details
+    private static final int DATABASE_VERSION = 4; // Version 4 for full scan_history details
 
     // Info for our 'users' table.
     private static final String TABLE_USERS = "users";

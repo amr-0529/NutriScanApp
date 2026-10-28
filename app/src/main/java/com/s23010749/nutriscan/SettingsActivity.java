@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
-// This activity is a placeholder for app settings.
+
 public class SettingsActivity extends AppCompatActivity {
 
     Button buttonBackSettings; // Button to go back
