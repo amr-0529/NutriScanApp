@@ -1,57 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F2F5"
-    tools:context=".HistoryActivity">
+    android:background="#F5F7FA">
 
-    <!-- Title for the History screen -->
     <TextView
         android:id="@+id/textViewHistoryTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:text="Scan History"
-        android:textColor="#333333"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-medium"
-        />
+        android:textColor="@color/text_dark"
+        android:textSize="28sp"
+        android:textStyle="bold" />
 
-    <!-- This is where the list of past scans will appear -->
-    <ListView
-        android:id="@+id/listViewHistory"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewHistory"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textViewHistoryTitle"
         android:layout_above="@+id/buttonBackFromHistory"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="30dp"
-        android:divider="#E0E0E0"
-        android:dividerHeight="1dp"
-        android:paddingBottom="10dp"
+        android:layout_marginTop="20dp"
         android:clipToPadding="false"
-        />
+        android:paddingBottom="20dp" />
 
-    <!-- Button to go back to the Home screen -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBackFromHistory"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="30dp"
-        android:background="@drawable/rounded_button_background"
         android:text="Back to Home"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
-        android:foreground="?attr/selectableItemBackground"
-        />
+        app:backgroundTint="@color/primary_blue"
+        app:cornerRadius="30dp" />
 
 </RelativeLayout>

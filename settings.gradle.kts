@@ -1,8 +1,8 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
@@ -10,8 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-
+        // This is the crucial line for JitPack
+        maven(url = "https://jitpack.io")
     }
 }
+
 rootProject.name = "NutriScan"
 include(":app")

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
+    android:background="@color/bg_light"
     android:fillViewport="true">
 
     <LinearLayout
@@ -19,36 +19,35 @@
             android:layout_marginTop="10dp"
             android:text="Product Name"
             android:textColor="@color/text_dark"
-            android:textSize="24sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:gravity="center" />
 
+        <!-- HEALTH SCORE CARD -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp">
-
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="24dp"
                 android:gravity="center">
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Health Score"
                     android:textColor="@color/text_light"
-                    android:textSize="16sp" />
-
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
                 <FrameLayout
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_marginTop="10dp">
-
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginTop="16dp">
                     <com.google.android.material.progressindicator.CircularProgressIndicator
                         android:id="@+id/healthProgress"
                         android:layout_width="match_parent"
@@ -56,10 +55,9 @@
                         android:indeterminate="false"
                         android:max="100"
                         app:indicatorColor="@color/primary_green"
-                        app:indicatorSize="120dp"
-                        app:trackColor="#E0E0E0"
-                        app:trackThickness="10dp" />
-
+                        app:indicatorSize="140dp"
+                        app:trackColor="#E2E8F0"
+                        app:trackThickness="12dp" />
                     <TextView
                         android:id="@+id/textViewScore"
                         android:layout_width="match_parent"
@@ -67,51 +65,41 @@
                         android:gravity="center"
                         android:text="0"
                         android:textColor="@color/text_dark"
-                        android:textSize="32sp"
+                        android:textSize="42sp"
                         android:textStyle="bold" />
                 </FrameLayout>
-
                 <TextView
                     android:id="@+id/textViewHealthStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="12dp"
                     android:text="Status"
                     android:textColor="@color/primary_green"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupTags"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            app:chipSpacingHorizontal="8dp" />
-
+        <!-- NUTRITION FACTS CARD -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp">
-
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="20dp">
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="All Detected Nutrients"
-                    android:textColor="@color/primary_blue"
+                    android:text="Detected Nutrients"
+                    android:textColor="@color/text_dark"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="15dp" />
-
+                    android:layout_marginBottom="16dp" />
                 <LinearLayout
                     android:id="@+id/nutritionContainer"
                     android:layout_width="match_parent"
@@ -120,55 +108,25 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardIngredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ingredients"
-                    android:textColor="@color/primary_blue"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
-
-                <TextView
-                    android:id="@+id/textViewIngredients"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#555555"
-                    android:textSize="14sp"
-                    android:lineSpacingExtra="4dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
+        <!-- TIPS CARD -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            app:cardBackgroundColor="#E3F2FD"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp">
+            android:layout_marginTop="20dp"
+            app:cardBackgroundColor="#EFF6FF"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#BFDBFE"
+            app:strokeWidth="1dp">
             <TextView
                 android:id="@+id/textViewTips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:padding="20dp"
                 android:text="Tips"
-                android:textColor="#0D47A1"
-                android:textSize="14sp"
+                android:textColor="#1E3A8A"
+                android:textSize="15sp"
+                android:lineSpacingExtra="4dp"
                 android:textStyle="italic" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -176,7 +134,7 @@
             android:id="@+id/textViewLocationDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="20dp"
             android:text="Scanned at..."
             android:textColor="@color/text_light"
             android:textSize="12sp"
@@ -185,14 +143,13 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonBack"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="20dp"
             android:text="Save &amp; Return Home"
             android:textSize="16sp"
             android:textStyle="bold"
             app:backgroundTint="@color/primary_blue"
-            app:cornerRadius="30dp" />
-
+            app:cornerRadius="32dp" />
     </LinearLayout>
 </ScrollView>

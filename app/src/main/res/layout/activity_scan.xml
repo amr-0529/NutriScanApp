@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <!-- Full-screen clean camera preview -->
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
         android:layout_width="match_parent"
@@ -15,18 +14,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Tap to focus overlay -->
-    <View
-        android:id="@+id/tapToFocusOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Sleek top gradient -->
     <View
         android:layout_width="match_parent"
         android:layout_height="120dp"
@@ -42,15 +29,11 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:shadowColor="#000000"
-        android:shadowDx="1"
-        android:shadowDy="1"
-        android:shadowRadius="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Modern Flashlight Toggle -->
+    <!-- Flashlight Toggle -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabFlashlight"
         android:layout_width="wrap_content"
@@ -63,14 +46,25 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#FFFFFF" />
 
-    <!-- Cinematic Bottom Gradient -->
     <View
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:background="#88000000"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- PERFECTLY ALIGNED SHUTTER BUTTON -->
+    <!-- Loading Spinner -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:visibility="gone"
+        android:indeterminateTint="#4CAF50"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- PERFECTLY ALIGNED CAPTURE BUTTON -->
     <FrameLayout
         android:id="@+id/buttonCaptureImage"
         android:layout_width="80dp"
@@ -80,7 +74,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <!-- The Green Circle Background -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -88,7 +81,6 @@
             app:cardCornerRadius="40dp"
             app:cardElevation="6dp" />
 
-        <!-- The Camera Icon Centered Perfectly -->
         <ImageView
             android:layout_width="36dp"
             android:layout_height="36dp"

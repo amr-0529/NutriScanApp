@@ -12,17 +12,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.Iterator;
 
 public class HistoryDetailActivity extends AppCompatActivity {
 
-    TextView textViewDetailFoodName, textViewDetailHealthStatus, textViewDetailTips, textViewDetailLocationDate, textViewDetailIngredients;
+    TextView textViewDetailFoodName, textViewDetailHealthStatus, textViewDetailTips, textViewDetailLocationDate;
     View detailHealthStatusIndicator;
     LinearLayout detailNutritionContainer;
-    CardView cardDetailIngredients;
     Button buttonViewOnMap, buttonDeleteScan, buttonBackFromDetail;
 
     @Override
@@ -36,8 +34,6 @@ public class HistoryDetailActivity extends AppCompatActivity {
         detailNutritionContainer = findViewById(R.id.detailNutritionContainer);
         textViewDetailTips = findViewById(R.id.textViewDetailTips);
         textViewDetailLocationDate = findViewById(R.id.textViewDetailLocationDate);
-        textViewDetailIngredients = findViewById(R.id.textViewDetailIngredients);
-        cardDetailIngredients = findViewById(R.id.cardDetailIngredients);
         buttonViewOnMap = findViewById(R.id.buttonViewOnMap);
         buttonDeleteScan = findViewById(R.id.buttonDeleteScan);
         buttonBackFromDetail = findViewById(R.id.buttonBackFromDetail);
@@ -49,7 +45,6 @@ public class HistoryDetailActivity extends AppCompatActivity {
         String foodName = intent.getStringExtra("FOOD_NAME");
         String healthStatus = intent.getStringExtra("HEALTH_STATUS");
         String nutrientsJson = intent.getStringExtra("NUTRIENTS_JSON");
-        String ingredients = intent.getStringExtra("INGREDIENTS");
         String tips = intent.getStringExtra("TIPS");
         String date = intent.getStringExtra("DATE");
         String location = intent.getStringExtra("LOCATION");
@@ -59,15 +54,10 @@ public class HistoryDetailActivity extends AppCompatActivity {
         textViewDetailTips.setText(tips);
         textViewDetailLocationDate.setText("Scanned: " + date + "\n" + location);
 
-        if (ingredients != null && !ingredients.isEmpty()) {
-            cardDetailIngredients.setVisibility(View.VISIBLE);
-            textViewDetailIngredients.setText(ingredients);
-        }
-
-        if ("Healthy".equals(healthStatus)) detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#4CAF50"));
-        else if ("Unhealthy".equals(healthStatus)) detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#F44336"));
-        else if ("Moderate".equals(healthStatus)) detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#FFC107"));
-        else detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#9E9E9E"));
+        if ("Healthy".equals(healthStatus)) detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#10B981"));
+        else if ("Unhealthy".equals(healthStatus)) detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#EF4444"));
+        else if ("Moderate".equals(healthStatus)) detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#F59E0B"));
+        else detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#94A3B8"));
 
         try {
             JSONObject jsonObject = new JSONObject(nutrientsJson);
@@ -90,13 +80,13 @@ public class HistoryDetailActivity extends AppCompatActivity {
 
                 TextView tvKey = new TextView(this);
                 tvKey.setText(key);
-                tvKey.setTextColor(Color.parseColor("#555555"));
+                tvKey.setTextColor(Color.parseColor("#334155"));
                 tvKey.setTextSize(16);
                 tvKey.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
                 TextView tvValue = new TextView(this);
                 tvValue.setText(value);
-                tvValue.setTextColor(Color.parseColor("#1A1A1A"));
+                tvValue.setTextColor(Color.parseColor("#0F172A"));
                 tvValue.setTextSize(16);
                 tvValue.setTypeface(null, Typeface.BOLD);
                 tvValue.setGravity(Gravity.END);
@@ -107,7 +97,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
 
                 View divider = new View(this);
                 divider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
-                divider.setBackgroundColor(Color.parseColor("#EEEEEE"));
+                divider.setBackgroundColor(Color.parseColor("#E2E8F0"));
                 detailNutritionContainer.addView(divider);
             }
         } catch (JSONException e) {

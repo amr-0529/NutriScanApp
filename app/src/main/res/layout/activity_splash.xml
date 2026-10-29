@@ -1,42 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#007BFF"
-    android:gravity="center">
+    android:background="@drawable/splash_background">
 
-<ImageView
-android:id="@+id/imageViewLogo"
-android:layout_width="150dp"
-android:layout_height="150dp"
-android:src="@mipmap/ic_launcher_round"
-android:contentDescription="App Logo"
-android:layout_centerHorizontal="true"
-    />
+    <!-- App Logo -->
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:contentDescription="App Logo"
+        android:src="@mipmap/ic_launcher_round"
+        app:layout_constraintBottom_toTopOf="@+id/textViewAppName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.45" />
 
-<TextView
-android:id="@+id/textViewAppName"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_below="@+id/imageViewLogo"
-android:layout_marginTop="20dp"
-android:text="NutriScan"
-android:textColor="#FFFFFF"
-android:textSize="36sp"
-android:textStyle="bold"
-android:fontFamily="sans-serif-medium"
-android:layout_centerHorizontal="true"
-    />
+    <!-- App Name -->
+    <TextView
+        android:id="@+id/textViewAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:letterSpacing="0.05"
+        android:text="NutriScan"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewLogo" />
 
-<ProgressBar
-android:id="@+id/progressBar"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_below="@+id/textViewAppName"
-android:layout_marginTop="50dp"
-android:layout_centerHorizontal="true"
-android:indeterminateTint="#FFFFFF"
-    />
+    <!-- Tagline -->
+    <TextView
+        android:id="@+id/textViewTagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Scan. Analyze. Live Healthy."
+        android:textColor="#94A3B8"
+        android:textSize="16sp"
+        android:letterSpacing="0.02"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAppName" />
 
-</RelativeLayout>
+    <!-- Loading Spinner -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="60dp"
+        android:indeterminateTint="@color/primary_green"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Loading Text -->
+    <TextView
+        android:id="@+id/textViewLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Loading..."
+        android:textColor="#64748B"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

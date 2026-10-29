@@ -2,10 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary_green">#2E7D32</color>
-    <color name="primary_blue">#1976D2</color>
-    <color name="bg_light">#F5F7FA</color>
-    <color name="text_dark">#1A1A1A</color>
-    <color name="text_light">#757575</color>
-    <color name="error_red">#D32F2F</color>
+
+    <!-- Premium Palette -->
+    <color name="primary_green">#10B981</color>  <!-- Emerald Green -->
+    <color name="primary_blue">#3B82F6</color>   <!-- Bright Blue -->
+    <color name="bg_light">#F8FAFC</color>       <!-- Very Light Slate -->
+    <color name="text_dark">#0F172A</color>      <!-- Dark Slate -->
+    <color name="text_light">#64748B</color>     <!-- Gray Slate -->
+    <color name="error_red">#EF4444</color>      <!-- Red -->
+    <color name="warning_yellow">#F59E0B</color> <!-- Amber -->
 </resources>

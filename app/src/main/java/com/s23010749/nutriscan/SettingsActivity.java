@@ -1,28 +1,45 @@
 package com.s23010749.nutriscan;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 public class SettingsActivity extends AppCompatActivity {
-
-    Button buttonBackSettings; // Button to go back
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings); // Link to our Settings screen design
+        setContentView(R.layout.activity_settings);
 
-        buttonBackSettings = findViewById(R.id.buttonBackSettings); // Find the back button
+        MaterialSwitch switchNotifications = findViewById(R.id.switchNotifications);
+        MaterialCardView cardClearHistory = findViewById(R.id.cardClearHistory);
+        Button buttonBackSettings = findViewById(R.id.buttonBackSettings);
 
-        // Set up what happens when the back button is clicked
-        buttonBackSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish(); // Close this activity and go back to the previous one (Home)
+        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                Toast.makeText(this, "Daily reminders enabled!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Daily reminders disabled.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        cardClearHistory.setOnClickListener(v -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Clear History")
+                    .setMessage("Are you sure you want to delete all past scans?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        DatabaseHelper db = new DatabaseHelper(this);
+                        db.getWritableDatabase().delete("scan_history", null, null);
+                        Toast.makeText(this, "History cleared!", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+
+        buttonBackSettings.setOnClickListener(v -> finish());
     }
 }
