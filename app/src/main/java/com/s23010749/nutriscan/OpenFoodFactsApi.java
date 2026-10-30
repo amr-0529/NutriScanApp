@@ -6,7 +6,6 @@ import retrofit2.http.Header;
 import retrofit2.http.Path;
 
 public interface OpenFoodFactsApi {
-
     @GET("api/v2/product/{barcode}.json")
     Call<ProductResponse> getProductByBarcode(
             @Path("barcode") String barcode,

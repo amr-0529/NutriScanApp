@@ -33,9 +33,7 @@ public class HistoryActivity extends AppCompatActivity {
         loadHistory();
 
         buttonBack.setOnClickListener(v -> {
-            Intent intent = new Intent(HistoryActivity.this, HomeActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            startActivity(new Intent(HistoryActivity.this, HomeActivity.class));
             finish();
         });
     }
@@ -43,6 +41,7 @@ public class HistoryActivity extends AppCompatActivity {
     private void loadHistory() {
         historyList.clear();
         Cursor cursor = databaseHelper.getAllScanHistory();
+
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 historyList.add(new ScanHistoryItem(

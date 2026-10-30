@@ -21,7 +21,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
     TextView textViewDetailFoodName, textViewDetailHealthStatus, textViewDetailTips, textViewDetailLocationDate;
     View detailHealthStatusIndicator;
     LinearLayout detailNutritionContainer;
-    Button buttonViewOnMap, buttonDeleteScan, buttonBackFromDetail;
+    Button buttonDeleteScan, buttonBackFromDetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,6 @@ public class HistoryDetailActivity extends AppCompatActivity {
         detailNutritionContainer = findViewById(R.id.detailNutritionContainer);
         textViewDetailTips = findViewById(R.id.textViewDetailTips);
         textViewDetailLocationDate = findViewById(R.id.textViewDetailLocationDate);
-        buttonViewOnMap = findViewById(R.id.buttonViewOnMap);
         buttonDeleteScan = findViewById(R.id.buttonDeleteScan);
         buttonBackFromDetail = findViewById(R.id.buttonBackFromDetail);
 
@@ -47,12 +46,11 @@ public class HistoryDetailActivity extends AppCompatActivity {
         String nutrientsJson = intent.getStringExtra("NUTRIENTS_JSON");
         String tips = intent.getStringExtra("TIPS");
         String date = intent.getStringExtra("DATE");
-        String location = intent.getStringExtra("LOCATION");
 
         textViewDetailFoodName.setText(foodName);
         textViewDetailHealthStatus.setText(healthStatus);
         textViewDetailTips.setText(tips);
-        textViewDetailLocationDate.setText("Scanned: " + date + "\n" + location);
+        textViewDetailLocationDate.setText("Logged on: " + date);
 
         if ("Healthy".equals(healthStatus)) detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#10B981"));
         else if ("Unhealthy".equals(healthStatus)) detailHealthStatusIndicator.setBackgroundColor(Color.parseColor("#EF4444"));
@@ -104,34 +102,13 @@ public class HistoryDetailActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        final double[] coords = new double[]{0.0, 0.0};
-        if (location != null && location.startsWith("Lat: ")) {
-            try {
-                String[] parts = location.split(", ");
-                if (parts.length == 2) {
-                    coords[0] = Double.parseDouble(parts[0].replace("Lat: ", ""));
-                    coords[1] = Double.parseDouble(parts[1].replace("Lon: ", ""));
-                    buttonViewOnMap.setEnabled(true);
-                } else buttonViewOnMap.setEnabled(false);
-            } catch (NumberFormatException e) { buttonViewOnMap.setEnabled(false); }
-        } else buttonViewOnMap.setEnabled(false);
-
-        buttonViewOnMap.setOnClickListener(v -> {
-            if (buttonViewOnMap.isEnabled()) {
-                Intent mapIntent = new Intent(HistoryDetailActivity.this, MapsActivity.class);
-                mapIntent.putExtra("LATITUDE", coords[0]);
-                mapIntent.putExtra("LONGITUDE", coords[1]);
-                mapIntent.putExtra("LOCATION_NAME", foodName + " Scan");
-                startActivity(mapIntent);
-            } else Toast.makeText(this, "Map not available.", Toast.LENGTH_SHORT).show();
-        });
-
         long finalScanId = scanId;
         buttonDeleteScan.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle("Delete Scan").setMessage("Are you sure?")
+                .setTitle("Delete Log").setMessage("Are you sure?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    if (finalScanId != -1 && databaseHelper.deleteScanResult(finalScanId)) {
-                        Toast.makeText(this, "Scan deleted.", Toast.LENGTH_SHORT).show();
+                    if (finalScanId != -1) {
+                        databaseHelper.deleteScanResult(finalScanId);
+                        Toast.makeText(this, "Log deleted.", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 }).setNegativeButton("No", null).show());

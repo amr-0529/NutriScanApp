@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_light"
+    android:background="#F8FAFC"
     android:fillViewport="true">
 
     <LinearLayout
@@ -18,12 +18,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Product Name"
-            android:textColor="@color/text_dark"
+            android:textColor="#0F172A"
             android:textSize="26sp"
             android:textStyle="bold"
             android:gravity="center" />
 
-        <!-- HEALTH SCORE CARD -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Health Score"
-                    android:textColor="@color/text_light"
+                    android:textColor="#64748B"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
                 <FrameLayout
@@ -54,7 +53,7 @@
                         android:layout_height="match_parent"
                         android:indeterminate="false"
                         android:max="100"
-                        app:indicatorColor="@color/primary_green"
+                        app:indicatorColor="#10B981"
                         app:indicatorSize="140dp"
                         app:trackColor="#E2E8F0"
                         app:trackThickness="12dp" />
@@ -64,7 +63,7 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="0"
-                        android:textColor="@color/text_dark"
+                        android:textColor="#0F172A"
                         android:textSize="42sp"
                         android:textStyle="bold" />
                 </FrameLayout>
@@ -74,13 +73,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="Status"
-                    android:textColor="@color/primary_green"
+                    android:textColor="#10B981"
                     android:textSize="20sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- NUTRITION FACTS CARD -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,7 +94,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Detected Nutrients"
-                    android:textColor="@color/text_dark"
+                    android:textColor="#0F172A"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="16dp" />
@@ -108,7 +106,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- TIPS CARD -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -136,7 +133,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Scanned at..."
-            android:textColor="@color/text_light"
+            android:textColor="#64748B"
             android:textSize="12sp"
             android:gravity="center" />
 
@@ -149,7 +146,7 @@
             android:text="Save &amp; Return Home"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:backgroundTint="@color/primary_blue"
+            app:backgroundTint="#3B82F6"
             app:cornerRadius="32dp" />
     </LinearLayout>
 </ScrollView>

@@ -61,7 +61,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- NUTRITION CARD -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,42 +89,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- NEW INGREDIENTS CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardDetailIngredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ingredients"
-                    android:textColor="@color/primary_blue"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
-
-                <TextView
-                    android:id="@+id/textViewDetailIngredients"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#555555"
-                    android:textSize="14sp"
-                    android:lineSpacingExtra="4dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- TIPS CARD -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -154,30 +117,14 @@
             android:textSize="12sp"
             android:gravity="center" />
 
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDeleteScan"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp">
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonViewOnMap"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="10dp"
-                android:text="Map"
-                app:cornerRadius="30dp"
-                app:backgroundTint="@color/primary_blue"/>
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonDeleteScan"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:text="Delete"
-                app:cornerRadius="30dp"
-                app:backgroundTint="#F44336"/>
-        </LinearLayout>
+            android:layout_height="60dp"
+            android:layout_marginTop="20dp"
+            android:text="Delete this Log"
+            app:cornerRadius="30dp"
+            app:backgroundTint="#F44336"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonBackFromDetail"

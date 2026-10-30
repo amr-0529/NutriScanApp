@@ -37,19 +37,18 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ScanHistoryItem item = historyList.get(position);
         holder.tvFoodName.setText(item.foodName);
-        holder.tvDateLocation.setText(item.date + " • " + item.location);
+        holder.tvDateLocation.setText(item.date);
         holder.tvStatus.setText(item.healthStatus);
 
-        // Set colors based on status
         if ("Healthy".equals(item.healthStatus)) {
-            holder.statusIndicator.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#4CAF50")));
-            holder.tvStatus.setTextColor(Color.parseColor("#4CAF50"));
+            holder.statusIndicator.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#10B981")));
+            holder.tvStatus.setTextColor(Color.parseColor("#10B981"));
         } else if ("Unhealthy".equals(item.healthStatus)) {
-            holder.statusIndicator.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#F44336")));
-            holder.tvStatus.setTextColor(Color.parseColor("#F44336"));
+            holder.statusIndicator.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#EF4444")));
+            holder.tvStatus.setTextColor(Color.parseColor("#EF4444"));
         } else {
-            holder.statusIndicator.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#FFC107")));
-            holder.tvStatus.setTextColor(Color.parseColor("#FFC107"));
+            holder.statusIndicator.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#F59E0B")));
+            holder.tvStatus.setTextColor(Color.parseColor("#F59E0B"));
         }
 
         holder.itemView.setOnClickListener(v -> listener.onItemClick(item));

@@ -12,83 +12,44 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.Iterator;
 
 public class ResultActivity extends AppCompatActivity {
-
-    TextView textViewFoodName, textViewHealthStatus, textViewTips, textViewLocationDate, textViewScore;
-    CircularProgressIndicator healthProgress;
-    LinearLayout nutritionContainer;
-    Button buttonBack;
-    DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
-        textViewFoodName = findViewById(R.id.textViewFoodName);
-        textViewHealthStatus = findViewById(R.id.textViewHealthStatus);
-        textViewScore = findViewById(R.id.textViewScore);
-        healthProgress = findViewById(R.id.healthProgress);
-        nutritionContainer = findViewById(R.id.nutritionContainer);
-        textViewTips = findViewById(R.id.textViewTips);
-        textViewLocationDate = findViewById(R.id.textViewLocationDate);
-        buttonBack = findViewById(R.id.buttonBack);
+        TextView tvName = findViewById(R.id.textViewFoodName);
+        TextView tvScore = findViewById(R.id.textViewScore);
+        TextView tvStatus = findViewById(R.id.textViewHealthStatus);
+        CircularProgressIndicator progress = findViewById(R.id.healthProgress);
+        LinearLayout container = findViewById(R.id.nutritionContainer);
+        TextView tvTips = findViewById(R.id.textViewTips);
+        TextView tvDate = findViewById(R.id.textViewLocationDate);
+        Button btnBack = findViewById(R.id.buttonBack);
 
-        databaseHelper = new DatabaseHelper(this);
+        String name = getIntent().getStringExtra("food_name");
+        String jsonStr = getIntent().getStringExtra("nutrients_json");
+        String date = getIntent().getStringExtra("date");
 
-        Intent intent = getIntent();
-        String foodName = intent.getStringExtra("food_name");
-        String nutrientsJson = intent.getStringExtra("nutrients_json");
-        String healthStatus = intent.getStringExtra("health");
-        int score = intent.getIntExtra("score", -1);
-        String tips = intent.getStringExtra("tips");
-        String scanDate = intent.getStringExtra("date");
-        String scanLocation = intent.getStringExtra("location");
+        tvName.setText(name);
+        tvDate.setText("Logged on " + date);
 
-        textViewFoodName.setText(foodName);
-        textViewHealthStatus.setText(healthStatus);
-        textViewLocationDate.setText("Scanned on " + scanDate + "\n" + scanLocation);
-        textViewTips.setText(tips != null ? tips : "No tips available.");
-
-        if (score == -1) {
-            healthProgress.setProgress(0);
-            healthProgress.setIndicatorColor(Color.parseColor("#94A3B8"));
-            textViewScore.setText("?");
-            textViewHealthStatus.setTextColor(Color.parseColor("#94A3B8"));
-        } else {
-            healthProgress.setProgress(score);
-            textViewScore.setText(String.valueOf(score));
-
-            if ("Healthy".equals(healthStatus)) {
-                healthProgress.setIndicatorColor(Color.parseColor("#10B981"));
-                textViewHealthStatus.setTextColor(Color.parseColor("#10B981"));
-            } else if ("Unhealthy".equals(healthStatus)) {
-                healthProgress.setIndicatorColor(Color.parseColor("#EF4444"));
-                textViewHealthStatus.setTextColor(Color.parseColor("#EF4444"));
-            } else {
-                healthProgress.setIndicatorColor(Color.parseColor("#F59E0B"));
-                textViewHealthStatus.setTextColor(Color.parseColor("#F59E0B"));
-            }
-        }
+        double sugar = 0, fat = 0, salt = 0;
 
         try {
-            JSONObject jsonObject = new JSONObject(nutrientsJson);
-            Iterator<String> keys = jsonObject.keys();
+            JSONObject json = new JSONObject(jsonStr);
+            sugar = extractVal(json.optString("Sugar", "0"));
+            fat = extractVal(json.optString("Fat", "0"));
+            salt = extractVal(json.optString("Salt", "0"));
 
-            if (!keys.hasNext()) {
-                TextView noData = new TextView(this);
-                noData.setText("No readable nutrients found.");
-                noData.setTextColor(Color.GRAY);
-                nutritionContainer.addView(noData);
-            }
-
+            Iterator<String> keys = json.keys();
             while (keys.hasNext()) {
                 String key = keys.next();
-                String value = jsonObject.getString(key);
+                String val = json.getString(key);
 
                 LinearLayout row = new LinearLayout(this);
                 row.setOrientation(LinearLayout.HORIZONTAL);
@@ -97,38 +58,49 @@ public class ResultActivity extends AppCompatActivity {
                 TextView tvKey = new TextView(this);
                 tvKey.setText(key);
                 tvKey.setTextColor(Color.parseColor("#334155"));
-                tvKey.setTextSize(16);
                 tvKey.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
-                TextView tvValue = new TextView(this);
-                tvValue.setText(value);
-                tvValue.setTextColor(Color.parseColor("#0F172A"));
-                tvValue.setTextSize(16);
-                tvValue.setTypeface(null, Typeface.BOLD);
-                tvValue.setGravity(Gravity.END);
+                TextView tvVal = new TextView(this);
+                tvVal.setText(val);
+                tvVal.setTextColor(Color.parseColor("#0F172A"));
+                tvVal.setTypeface(null, Typeface.BOLD);
+                tvVal.setGravity(Gravity.END);
 
                 row.addView(tvKey);
-                row.addView(tvValue);
-                nutritionContainer.addView(row);
-
-                View divider = new View(this);
-                divider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
-                divider.setBackgroundColor(Color.parseColor("#E2E8F0"));
-                nutritionContainer.addView(divider);
+                row.addView(tvVal);
+                container.addView(row);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) {}
 
-        buttonBack.setOnClickListener(v -> {
-            // Passing empty string for ingredients parameter to maintain DB compatibility
-            databaseHelper.addScanResult(foodName, healthStatus, nutrientsJson, "", textViewTips.getText().toString(), scanDate, scanLocation);
-            Toast.makeText(ResultActivity.this, "Saved to history!", Toast.LENGTH_SHORT).show();
+        int score = 100;
+        if (sugar > 13.5) score -= 30; else if (sugar > 5) score -= 10;
+        if (fat > 5.0) score -= 25; else if (fat > 3) score -= 10;
+        if (salt > 1.5) score -= 25; else if (salt > 0.3) score -= 10;
+        score = Math.max(0, score);
 
-            Intent backToHome = new Intent(ResultActivity.this, HomeActivity.class);
-            backToHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(backToHome);
+        String status;
+        if (score >= 80) { status = "Healthy"; progress.setIndicatorColor(Color.parseColor("#10B981")); tvStatus.setTextColor(Color.parseColor("#10B981")); tvTips.setText("Great choice! Good nutrient balance."); }
+        else if (score >= 50) { status = "Moderate"; progress.setIndicatorColor(Color.parseColor("#F59E0B")); tvStatus.setTextColor(Color.parseColor("#F59E0B")); tvTips.setText("Consume in moderation. Watch portion sizes."); }
+        else { status = "Unhealthy"; progress.setIndicatorColor(Color.parseColor("#EF4444")); tvStatus.setTextColor(Color.parseColor("#EF4444")); tvTips.setText("High in unhealthy nutrients. Limit consumption."); }
+
+        progress.setProgress(score);
+        tvScore.setText(String.valueOf(score));
+        tvStatus.setText(status);
+
+        DatabaseHelper db = new DatabaseHelper(this);
+        btnBack.setOnClickListener(v -> {
+            // FIXED: Added "Unknown" as the 6th argument for location
+            db.addScanResult(name, status, jsonStr, tvTips.getText().toString(), date, "Unknown");
+            Toast.makeText(this, "Added to daily log!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, HomeActivity.class));
             finish();
         });
+    }
+
+    private double extractVal(String text) {
+        try {
+            String num = text.replaceAll("[^0-9.]", "");
+            return num.isEmpty() ? 0 : Double.parseDouble(num);
+        } catch (Exception e) { return 0; }
     }
 }
